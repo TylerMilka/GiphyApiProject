@@ -13,27 +13,34 @@
 //lastly add a form to the data so that the user can search for a new giphy
 //the theme searched should create a new button and have the same qualities
 //as the rest of the gifs
-    var topics = ['Red Hot Chili Peppers', 'Arctic  Monkeys', 'Tool', 'Sublime', 'Avenged Sevenfold', 'Rebulution', 'Pretty Lights' ]; //array with bands (strings)
-    var currentBand = 0; //tracks the value of the array
-    var formHtml = [];
+var topics = ['Red Hot Chili Peppers', 'Arctic  Monkeys', 'Tool', 'Sublime', 'Avenged Sevenfold', 'Rebelution', 'Pretty Lights']; //array with bands (strings)
+var currentBand = 0; //tracks the value of the array
+var formHtml = [];
 
 
-function displayButtons(){
+
+function displayButtons() {
 
     $.each(topics, function(index, value) { //runs through the array
 
-        formHtml.push('<button type="submit" value="' + topics[currentBand] + '" id="band' + 0 + '"><label for="band' + 0 + '">' +
+        formHtml.push('<button type="submit" data-band="' + topics[currentBand] + '" id="band' + 0 + '"><label for="band' + 0 + '">' +
             topics[currentBand] + '</label></div><br/>' + '</label></div><br/>');
         currentBand++;
+        return;
+        input = $('#band-input').val().trim();
+
+
+
+
     });
 
     $('#topics').html(formHtml.join("")) //prints butt0ns to DOM with labels
 
-    
 
+    //////////activates button when clicked
     $('button').on('click', function() { //activates button via on click function
 
-        var p = $(this).data('currentBand'); // this = button    //var p  = button data-gif = "whatever name is included here"
+        var p = $(this).data('band'); // this = button    //var p  = button data-gif = "whatever name is included here"
         var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + p + "&api_key=dc6zaTOxFJmzC&limit=10"; //links to API
 
         $.ajax({ //object passed into AJAX
@@ -50,13 +57,14 @@ function displayButtons(){
 
                     var p = $('<p>').text("Rating: " + rating);
 
-                    var bandImage = $('<img>'); //linking personImage to an <img> tag that will appear in the dom
+                    var bandImage = $('<img>'); //linking bandImage to an <img> tag that will appear in the dom
                     bandImage.attr('src', results[i].images.fixed_height.url); // g
 
                     gifDiv.append(p)
                     gifDiv.append(bandImage)
 
                     $('#displayGifs').prepend(gifDiv);
+
                 }
 
             });
@@ -65,24 +73,70 @@ function displayButtons(){
 
 }
 
-$(document).ready(function(){
-
-//form box that spawns new gifs
-$('#addBand').on('click', function(){
-
-    var band =$('#band-input').val().trim();
-
-    topics.push(band);
-    console.log(topics);
-    displayButtons();
+function renderButtons(){   
+    $('#buttonsView').empty();
 
 
-    return false;
+
+
+}
+
+
+
+////////////////////////stopping animation
+$('displayGifs').on('click', function() {
+
+    var $this = $(this),
+        $index = $this.index(),
+
+        $img = $this.children('img'),
+        $imgSrc = $img.attr('src'),
+        $imgAlt = $img.attr('data-alt'),
+        $imgExt = $imgAlt.split('.');
+
+    if ($imgExt[1] === 'gif') {
+        $img.attr('src', $img.data('alt')).attr('data-alt', $imgSrc);
+    } else {
+        $img.attr('src', $imgAlt).attr('data-alt', $img.data('alt'));
+    }
+
+    // Add play class to help with the styling.
+    $this.toggleClass('play');
+
 });
 
+
+
+$("#displayGifs").click(function() {
+    if ($(this).find("img").attr("data-state") == "static") {
+        $(this).find("img").attr("src", "animatedgif.gif");
+    } else {
+        $(this).find("img").attr("src", "staticgif.jpg");
+    }
 });
 
-window.onload = function(){
+
+$(document).ready(function() {
+
+    //form box that spawns new gifs
+    $('#addBand').on('click', function() {
+
+        var band = $('#band-input').val().trim();
+
+        topics.push(band);
+        console.log(topics);
+        renderButtons();
+        
+
+
+        return false;
+    });
+
+});
+
+///pause gifs
+
+window.onload = function() {
 
     displayButtons();
 
