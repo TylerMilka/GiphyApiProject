@@ -12,35 +12,29 @@
 
 //lastly add a form to the data so that the user can search for a new giphy
 //the theme searched should create a new button and have the same qualities
+
 //as the rest of the gifs
+$(document).ready(function(){
+
 var topics = ['Red Hot Chili Peppers', 'Arctic  Monkeys', 'Tool', 'Sublime', 'Avenged Sevenfold', 'Rebelution', 'Pretty Lights']; //array with bands (strings)
-var currentBand = 0; //tracks the value of the array
-var formHtml = [];
 
 
 
 function displayButtons() {
 
-    $.each(topics, function(index, value) { //runs through the array
+   $('#buttonsView').empty();
 
-        formHtml.push('<button type="submit" data-band="' + topics[currentBand] + '" id="band' + 0 + '"><label for="band' + 0 + '">' +
-            topics[currentBand] + '</label></div><br/>' + '</label></div><br/>');
-        currentBand++;
-        return;
-        input = $('#band-input').val().trim();
+    for (var i = 0; i < topics.length; i++){
 
+        var a = $('<button>');
+        a.attr('data-name', topics[i]);
+        a.text(topics[i]);
+        $('#buttonsView').append(a);    
 
+    
+$('button').on('click', function() { //activates button via on click function
 
-
-    });
-
-    $('#topics').html(formHtml.join("")) //prints butt0ns to DOM with labels
-
-
-    //////////activates button when clicked
-    $('button').on('click', function() { //activates button via on click function
-
-        var p = $(this).data('band'); // this = button    //var p  = button data-gif = "whatever name is included here"
+        var p = $(this).data('name'); // this = button    //var p  = button data-gif = "whatever name is included here"
         var queryURL = "http://api.giphy.com/v1/gifs/search?q=" + p + "&api_key=dc6zaTOxFJmzC&limit=10"; //links to API
 
         $.ajax({ //object passed into AJAX
@@ -72,26 +66,26 @@ function displayButtons() {
     });
 
 }
+}
 
-function renderButtons(){   
-    $('#buttonsView').empty();
-
-
-
+function clearValue(){
 
 }
 
-
+    //////////activates button when clicked
+                                                
 
 ////////////////////////stopping animation
-$('displayGifs').on('click', function() {
+
+
+$('#displayGifs').on('click', function() {
 
     var $this = $(this),
         $index = $this.index(),
 
         $img = $this.children('img'),
         $imgSrc = $img.attr('src'),
-        $imgAlt = $img.attr('data-alt'),
+        $imgAlt = $img.attr('data-name'),
         $imgExt = $imgAlt.split('.');
 
     if ($imgExt[1] === 'gif') {
@@ -118,6 +112,15 @@ $("#displayGifs").click(function() {
 
 $(document).ready(function() {
 
+
+function validateForm() {
+    var x = document.forms["bandForm"]["band-input"].value;
+    if (x == null || x == "") {
+        alert("Name must be filled out");
+        return false;
+    }
+}
+
     //form box that spawns new gifs
     $('#addBand').on('click', function() {
 
@@ -125,8 +128,8 @@ $(document).ready(function() {
 
         topics.push(band);
         console.log(topics);
-        renderButtons();
-        
+        displayButtons();
+         $("#bandForm")[0].reset()
 
 
         return false;
@@ -136,8 +139,9 @@ $(document).ready(function() {
 
 ///pause gifs
 
-window.onload = function() {
-
     displayButtons();
 
-}
+
+
+
+})
